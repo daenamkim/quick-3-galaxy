@@ -10,7 +10,6 @@ const Sort = require("./Quick3Sort");
 require("./index.css");
 
 const sort = new Sort();
-const result = sort.sort();
 let samples = Array(100)
   .fill(1)
   .map((item, index) => {
@@ -18,8 +17,8 @@ let samples = Array(100)
   });
 
 // Suffle samples.
-for (let i = samples.length; i > 0; i--) {
-  let j = Math.floor(Math.random() * (i + 1));
+for (let i = samples.length - 1; i >= 0; i--) {
+  let j = Math.floor(Math.random() * i);
   [samples[i], samples[j]] = [samples[j], samples[i]];
 }
 
