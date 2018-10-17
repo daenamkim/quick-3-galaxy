@@ -1,4 +1,4 @@
-class SomeKindOfSort {
+class Quick3Sort {
   constructor(array) {
     this.array = array;
   }
@@ -6,6 +6,7 @@ class SomeKindOfSort {
     console.log("sort!");
     console.log("sort!");
     console.log("sort!");
+    return this.array;
   }
 
   returnValue(value) {
@@ -13,4 +14,4 @@ class SomeKindOfSort {
   }
 }
 
-module.exports = SomeKindOfSort;
+module.exports = Quick3Sort;

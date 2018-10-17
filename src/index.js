@@ -4,13 +4,24 @@
 */
 
 // How can we use require here if it's frontend? We can thank webpack.
-const Sort = require("./Sort");
+const Sort = require("./Quick3Sort");
 
 // A link to our styles!
 require("./index.css");
 
 const sort = new Sort();
-sort.sort();
+const result = sort.sort();
+let samples = Array(100)
+  .fill(1)
+  .map((item, index) => {
+    return index + 1;
+  });
+
+// Suffle samples.
+for (let i = samples.length; i > 0; i--) {
+  let j = Math.floor(Math.random() * (i + 1));
+  [samples[i], samples[j]] = [samples[j], samples[i]];
+}
 
 function createCheesyTitle(slogan) {
   const container = document.createElement("h1");
@@ -21,6 +32,9 @@ function createCheesyTitle(slogan) {
 
 const title = createCheesyTitle(sort.returnValue("Re-Engineer Yourself"));
 document.getElementById("title").appendChild(title);
+
+const resultView = document.getElementById("result");
+resultView.appendChild(document.createTextNode(JSON.stringify(samples)));
 
 /*
     An simple example of how you can make your project a bit more

@@ -1,4 +1,4 @@
-const Sort = require("../src/Sort");
+const Sort = require("../src/Quick3Sort");
 const { expect } = require("chai");
 
 describe("Sort", () => {
