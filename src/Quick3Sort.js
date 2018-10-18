@@ -1,10 +1,14 @@
 class Quick3Sort {
   constructor(array) {
     this.array = array;
+    this.steps = [];
   }
 
   sort() {
-    function run(array) {
+    let buffer = this.array.slice();
+    this.steps.push(this.array.slice());
+    // Lexical scope.
+    const run = (array, offset = 0) => {
       if (array.length < 2) {
         return array;
       }
@@ -24,16 +28,40 @@ class Quick3Sort {
       }
 
       let result = [];
-      result = result.concat(run(lessThanPivot));
+      if (lessThanPivot.length > 0) {
+        buffer.splice(offset, lessThanPivot.length, ...lessThanPivot);
+        if (equalToPivot.length > 0) {
+          buffer.splice(
+            offset + lessThanPivot.length,
+            equalToPivot.length,
+            ...equalToPivot
+          );
+          if (greaterThanPivot.length > 0) {
+            buffer.splice(
+              offset + lessThanPivot.length + equalToPivot.length,
+              greaterThanPivot.length,
+              ...greaterThanPivot
+            );
+          }
+        }
+      }
+      this.steps.push(buffer.slice());
+      result = result.concat(run(lessThanPivot, offset));
       result = result.concat(equalToPivot);
-      result = result.concat(run(greaterThanPivot));
+      result = result.concat(
+        run(
+          greaterThanPivot,
+          offset + lessThanPivot.length + equalToPivot.length
+        )
+      );
       return result;
-    }
+    };
+
     return run(this.array);
   }
 
-  returnValue(value) {
-    return value;
+  getSteps() {
+    return this.steps;
   }
 }
 
