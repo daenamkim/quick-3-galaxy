@@ -1,14 +1,13 @@
 // How can we use require here if it's frontend? We can thank webpack.
 const Chart = require("chart.js");
 const Quick3Sort = require("./class/Quick3Sort");
+// FIXME: without opening Chrome's debug console, sound couldn't be played. why?
 const {
   playBackground,
   stopBackground,
   playLaser,
   playTada,
 } = require("./util/sound");
-
-// A link to our styles!
 require("./index.css");
 
 const sortContext = document.getElementById("sortChart").getContext("2d");
@@ -74,7 +73,7 @@ const perform = () => {
     timerId = setTimeout(perform, 10);
   }
 };
-let timerId = setTimeout(perform, 2000);
+let timerId = setTimeout(perform, 2500);
 
 // TODO: remove here later.
 // function changeTitle(event) {
