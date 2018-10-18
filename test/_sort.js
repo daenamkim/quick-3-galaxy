@@ -9,7 +9,7 @@ describe("Sort", () => {
     expect(Sort.prototype.sort).to.be.a("function");
   });
   it("should return ordered result", () => {
-    let inputSamples = Array(100)
+    let inputSamples = Array(1000)
       .fill(0)
       .map((item, index) => {
         return index + 1;
