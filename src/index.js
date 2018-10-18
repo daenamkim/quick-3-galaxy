@@ -1,6 +1,12 @@
 // How can we use require here if it's frontend? We can thank webpack.
-const Quick3Sort = require("./Quick3Sort");
 const Chart = require("chart.js");
+const Quick3Sort = require("./class/Quick3Sort");
+const {
+  playBackground,
+  stopBackground,
+  playLaser,
+  playTada,
+} = require("./util/sound");
 
 // A link to our styles!
 require("./index.css");
@@ -29,6 +35,7 @@ const data = {
   ],
   // labels: Array(100).fill(1).map((item, index) => index),
 };
+
 const sortChart = new Chart(sortContext, {
   data: data,
   type: "polarArea",
@@ -40,7 +47,9 @@ let endIndex = results.length - 1;
 sortChart.options.animation.animateRotate = false;
 sortChart.options.animation.animateScale = false;
 sortChart.update();
-let intervalId = setInterval(() => {
+let player = playBackground();
+
+const perform = () => {
   results[startIndex].forEach(() => {
     sortChart.data.datasets.forEach((dataset) => {
       dataset.data.pop();
@@ -54,20 +63,26 @@ let intervalId = setInterval(() => {
   });
 
   sortChart.update();
+  playLaser();
 
   if (++startIndex > endIndex) {
     startIndex = 0;
-    clearInterval(intervalId);
+    clearTimeout(timerId);
+    stopBackground(player);
+    playTada();
+  } else {
+    timerId = setTimeout(perform, 10);
   }
-}, 10);
+};
+let timerId = setTimeout(perform, 2000);
 
 // TODO: remove here later.
-function changeTitle(event) {
-  event.preventDefault();
-  // console.log('What is an event?', event);
-}
+// function changeTitle(event) {
+//   event.preventDefault();
+//   // console.log('What is an event?', event);
+// }
 
-const form = document.querySelector("form");
-document.addEventListener("DOMContentLoaded", () => {
-  form.onsubmit = changeTitle;
-});
+// const form = document.querySelector("form");
+// document.addEventListener("DOMContentLoaded", () => {
+//   form.onsubmit = changeTitle;
+// });
