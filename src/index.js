@@ -4,12 +4,24 @@
 */
 
 // How can we use require here if it's frontend? We can thank webpack.
-const Sort = require("./Quick3Sort");
+const Quick3Sort = require("./Quick3Sort");
+const Chart = require("chart.js");
 
 // A link to our styles!
 require("./index.css");
 
-const sort = new Sort();
+function createCheesyTitle(slogan) {
+  const container = document.createElement("h1");
+  const textNode = document.createTextNode(slogan);
+  container.appendChild(textNode);
+  return container;
+}
+
+const sort = new Quick3Sort();
+const title = createCheesyTitle(sort.returnValue("Re-Engineer Yourself"));
+document.getElementById("title").appendChild(title);
+
+var sortContext = document.getElementById("sortChart").getContext("2d");
 let samples = Array(100)
   .fill(1)
   .map((item, index) => {
@@ -22,18 +34,19 @@ for (let i = samples.length - 1; i >= 0; i--) {
   [samples[i], samples[j]] = [samples[j], samples[i]];
 }
 
-function createCheesyTitle(slogan) {
-  const container = document.createElement("h1");
-  const textNode = document.createTextNode(slogan);
-  container.appendChild(textNode);
-  return container;
-}
-
-const title = createCheesyTitle(sort.returnValue("Re-Engineer Yourself"));
-document.getElementById("title").appendChild(title);
-
-const resultView = document.getElementById("result");
-resultView.appendChild(document.createTextNode(JSON.stringify(samples)));
+const data = {
+  datasets: [
+    {
+      data: samples,
+    },
+  ],
+  // labels: Array(100).fill(1).map((item, index) => index),
+};
+var myChart = new Chart(sortContext, {
+  data: data,
+  type: "polarArea",
+  // options: options
+});
 
 /*
     An simple example of how you can make your project a bit more
