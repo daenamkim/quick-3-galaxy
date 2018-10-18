@@ -5,28 +5,31 @@ class Quick3Sort {
 
   sort() {
     function run(array) {
-      if (array.length < 1) {
+      if (array.length < 2) {
         return array;
       }
+
       let lessThanPivot = [];
+      let equalToPivot = [];
       let greaterThanPivot = [];
       const pivot = array[0];
       for (let item of array) {
         if (item < pivot) {
           lessThanPivot.push(item);
-        } else if (item > pivot) {
+        } else if (item === pivot) {
+          equalToPivot.push(item);
+        } else {
           greaterThanPivot.push(item);
         }
       }
 
       let result = [];
       result = result.concat(run(lessThanPivot));
-      result = result.concat(pivot);
+      result = result.concat(equalToPivot);
       result = result.concat(run(greaterThanPivot));
       return result;
     }
-    let test = run(this.array);
-    return test;
+    return run(this.array);
   }
 
   returnValue(value) {
