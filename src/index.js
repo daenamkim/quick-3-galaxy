@@ -29,6 +29,8 @@ let results = sort.getSteps();
 const data = {
   datasets: [
     {
+      backgroundColor: [],
+      borderWidth: samples.map(() => 0.2),
       data: samples,
     },
   ],
@@ -52,12 +54,16 @@ const perform = () => {
   results[startIndex].forEach(() => {
     sortChart.data.datasets.forEach((dataset) => {
       dataset.data.pop();
+      dataset.backgroundColor.pop();
     });
   });
 
   results[startIndex].forEach((sample) => {
     sortChart.data.datasets.forEach((dataset) => {
       dataset.data.push(sample);
+      dataset.backgroundColor.push(
+        `#${Math.floor(Math.random() * 65536).toString(16)}`
+      );
     });
   });
 
