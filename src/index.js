@@ -8,10 +8,11 @@ const {
   playLaser,
   playTada,
 } = require("./util/sound");
+const MAX = 1000;
 require("./index.css");
 
 const sortContext = document.getElementById("sortChart").getContext("2d");
-const samples = Array(1000)
+const samples = Array(MAX)
   .fill(1)
   .map((item, index) => {
     return index + 1;
@@ -30,7 +31,7 @@ const data = {
   datasets: [
     {
       backgroundColor: [],
-      borderWidth: samples.map(() => 0.2),
+      borderWidth: samples.map(() => 0.1),
       data: samples,
     },
   ],
@@ -49,6 +50,24 @@ sortChart.options.animation.animateRotate = false;
 sortChart.options.animation.animateScale = false;
 sortChart.update();
 let player = playBackground();
+
+let colorIndex = 0;
+const updateColor = () => {
+  sortChart.data.datasets.forEach((dataset) => {
+    dataset.backgroundColor.pop();
+  });
+  // sortChart.data.datasets.forEach((dataset) => {
+  //   dataset.backgroundColor.push(`#5ac251`);
+  // });
+  // sortChart.data.datasets[colorIndex].backgroundColor.pop();
+  // sortChart.data.datasets[colorIndex].backgroundColor.push(`#${colorValue.toString(16)}`);
+  sortChart.update();
+  colorIndex++;
+  if (colorIndex >= MAX) {
+    console.log("finished");
+    clearInterval(timerId);
+  }
+};
 
 const perform = () => {
   results[startIndex].forEach(() => {
@@ -75,8 +94,9 @@ const perform = () => {
     clearTimeout(timerId);
     stopBackground(player);
     playTada();
+    timerId = setInterval(updateColor, 1);
   } else {
-    timerId = setTimeout(perform, 10);
+    timerId = setTimeout(perform, 1);
   }
 };
 let timerId = setTimeout(perform, 2500);
