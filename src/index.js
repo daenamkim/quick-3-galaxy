@@ -1,83 +1,72 @@
 // How can we use require here if it's frontend? We can thank webpack.
 const Chart = require("chart.js");
 const Quick3Sort = require("./class/Quick3Sort");
-// FIXME: without opening Chrome's debug console, sound couldn't be played. why?
-const {
-  playBackground,
-  stopBackground,
-  playLaser,
-  playTada,
-} = require("./util/sound");
-const MAX = 1000;
+const sound = require("./util/sound");
+const { shuffle } = require("./util/etc");
+const MAX_SAMPLES = 1000;
 require("./index.css");
 
-const sortContext = document.getElementById("sortChart").getContext("2d");
-const samples = Array(MAX)
-  .fill(1)
-  .map((item, index) => {
-    return index + 1;
+let sortChart;
+let sortingSteps;
+let backgroundPlayer;
+
+function init() {
+  const samples = Array(MAX_SAMPLES)
+    .fill(1)
+    .map((item, index) => {
+      return index + 1;
+    });
+  const shuffledSamples = shuffle(samples);
+  const quick3Sort = new Quick3Sort(shuffledSamples);
+  quick3Sort.sort();
+  sortingSteps = quick3Sort.getSteps();
+
+  const sortContext = document.getElementById("sortChart").getContext("2d");
+  const chartInitData = {
+    datasets: [
+      {
+        backgroundColor: [],
+        borderWidth: shuffledSamples.map(() => 0.1),
+        data: shuffledSamples,
+      },
+    ],
+    labels: [],
+  };
+  sortChart = new Chart(sortContext, {
+    data: chartInitData,
+    type: "polarArea",
+    options: [],
   });
 
-// Suffle input samples.
-for (let i = samples.length - 1; i >= 0; i--) {
-  let j = Math.floor(Math.random() * i);
-  [samples[i], samples[j]] = [samples[j], samples[i]];
+  // Disable animation effect after init.
+  sortChart.options.animation.animateRotate = false;
+  sortChart.options.animation.animateScale = false;
+  sortChart.update();
 }
-const sort = new Quick3Sort(samples);
-sort.sort();
-let results = sort.getSteps();
 
-const data = {
-  datasets: [
-    {
-      backgroundColor: [],
-      borderWidth: samples.map(() => 0.1),
-      data: samples,
-    },
-  ],
-  // labels: Array(100).fill(1).map((item, index) => index),
-};
-
-const sortChart = new Chart(sortContext, {
-  data: data,
-  type: "polarArea",
-  // options: options
-});
-
-let startIndex = 0;
-let endIndex = results.length - 1;
-sortChart.options.animation.animateRotate = false;
-sortChart.options.animation.animateScale = false;
-sortChart.update();
-let player = playBackground();
-
-let colorIndex = 0;
-const updateColor = () => {
+let index = 0;
+let timerId;
+const performEnding = () => {
   sortChart.data.datasets.forEach((dataset) => {
     dataset.backgroundColor.pop();
   });
-  // sortChart.data.datasets.forEach((dataset) => {
-  //   dataset.backgroundColor.push(`#5ac251`);
-  // });
-  // sortChart.data.datasets[colorIndex].backgroundColor.pop();
-  // sortChart.data.datasets[colorIndex].backgroundColor.push(`#${colorValue.toString(16)}`);
   sortChart.update();
-  colorIndex++;
-  if (colorIndex >= MAX) {
-    console.log("finished");
+
+  if (++index >= MAX_SAMPLES) {
     clearInterval(timerId);
   }
 };
 
-const perform = () => {
-  results[startIndex].forEach(() => {
+const performSorting = () => {
+  sortingSteps[index].forEach(() => {
     sortChart.data.datasets.forEach((dataset) => {
+      // It's weird because forEach of datasets is called once.
       dataset.data.pop();
       dataset.backgroundColor.pop();
     });
   });
 
-  results[startIndex].forEach((sample) => {
+  sortingSteps[index].forEach((sample) => {
     sortChart.data.datasets.forEach((dataset) => {
       dataset.data.push(sample);
       dataset.backgroundColor.push(
@@ -85,29 +74,22 @@ const perform = () => {
       );
     });
   });
-
   sortChart.update();
-  playLaser();
+  sound.play(sound.LASER);
 
-  if (++startIndex > endIndex) {
-    startIndex = 0;
+  if (++index >= sortingSteps.length) {
+    index = 0;
     clearTimeout(timerId);
-    stopBackground(player);
-    playTada();
-    timerId = setInterval(updateColor, 1);
+    sound.stop(backgroundPlayer);
+    sound.play(sound.TADA);
+    clearTimeout(timerId);
+    timerId = setInterval(performEnding, 1);
   } else {
-    timerId = setTimeout(perform, 1);
+    timerId = setTimeout(performSorting, 1);
   }
 };
-let timerId = setTimeout(perform, 2500);
 
-// TODO: remove here later.
-// function changeTitle(event) {
-//   event.preventDefault();
-//   // console.log('What is an event?', event);
-// }
-
-// const form = document.querySelector("form");
-// document.addEventListener("DOMContentLoaded", () => {
-//   form.onsubmit = changeTitle;
-// });
+// Let's go!
+init();
+backgroundPlayer = sound.play(sound.BACKGROUND);
+timerId = setTimeout(performSorting, 2500);
