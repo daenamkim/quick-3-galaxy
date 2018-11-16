@@ -8,7 +8,7 @@ require("./index.css");
 
 let sortChart;
 let sortingSteps;
-let backgroundPlayer;
+let backgroundSource;
 
 function init() {
   const samples = Array(MAX_SAMPLES)
@@ -80,7 +80,7 @@ const performSorting = () => {
   if (++index >= sortingSteps.length) {
     index = 0;
     clearTimeout(timerId);
-    sound.stop(backgroundPlayer);
+    sound.stop(backgroundSource);
     sound.play(sound.TADA);
     clearTimeout(timerId);
     timerId = setInterval(performEnding, 1);
@@ -91,5 +91,5 @@ const performSorting = () => {
 
 // Let's go!
 init();
-backgroundPlayer = sound.play(sound.BACKGROUND);
+backgroundSource = sound.play(sound.BACKGROUND);
 timerId = setTimeout(performSorting, 2500);

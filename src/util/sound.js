@@ -1,23 +1,40 @@
 const BACKGROUND = "background";
 const LASER = "laser";
 const TADA = "tada";
-
-function createAudio(file) {
-  // FIXME: without opening Chrome's debug console, sound couldn't be played. why?
-  const player = document.createElement("sound");
-  player.innerHTML = `<audio autoplay>
-    <source src="/sound/${file}.mp3" type="audio/mpeg">
-    </audio>`;
-  document.body.append(player);
-  return player;
-}
-
-function stop(player) {
-  document.body.removeChild(player);
-}
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const audioBuffer = {};
 
 function play(which) {
-  return createAudio(which);
+  const source = audioCtx.createBufferSource();
+  const request = new XMLHttpRequest();
+  request.open("GET", `/sound/${which}.mp3`);
+  request.responseType = "arraybuffer";
+  if (audioBuffer[which] === undefined) {
+    request.onload = () => {
+      audioCtx.decodeAudioData(
+        request.response,
+        (buffer) => {
+          audioBuffer[which] = buffer;
+          source.buffer = buffer;
+          source.connect(audioCtx.destination);
+          // source.loop = true;
+        },
+        (err) => {
+          console.log(`Audio decoding error: ${err.err}`);
+        }
+      );
+    };
+    request.send();
+  } else {
+    source.buffer = audioBuffer[which];
+  }
+  source.connect(audioCtx.destination);
+  source.start(0);
+  return source;
+}
+
+function stop(source) {
+  source.stop(0);
 }
 
 module.exports = {
