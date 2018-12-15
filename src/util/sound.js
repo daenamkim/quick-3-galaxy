@@ -9,8 +9,10 @@ function play(which) {
 }
 
 function stop(source) {
-  source.pause();
-  source.currentTime = 0;
+  if (source) {
+    source.pause();
+    source.currentTime = 0;
+  }
 }
 
 module.exports = {
