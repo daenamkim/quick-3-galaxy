@@ -4,7 +4,13 @@ const Quick3Sort = require("./class/Quick3Sort");
 const sound = require("./util/sound");
 const { shuffle } = require("./util/etc");
 const MAX_SAMPLES = 1000;
-const FADE_DELAY = 3000;
+const FADE_DELAY = 2000;
+const BACKGROUND_NORMAL = "normal";
+const BACKGROUND_BLACK = "black";
+const BACKGROUND_SPACE = "space";
+const HEADER_OFF = "off";
+const HEADER_ON = "on";
+
 require("./index.css");
 
 let sortChart;
@@ -14,19 +20,14 @@ let linesSource;
 
 function removeLines() {
   const contentsDiv = document.getElementById("contents");
-
   if (linesSource) {
     contentsDiv.removeChild(linesSource);
   }
 }
 
-function createLines() {
+function addLines() {
+  removeLines();
   const contentsDiv = document.getElementById("contents");
-
-  if (linesSource) {
-    contentsDiv.removeChild(linesSource);
-  }
-
   const linesDiv = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "svg"
@@ -56,18 +57,43 @@ function createLines() {
   linesSource = linesDiv;
 }
 
+function setHeader(mode) {
+  const header = document.getElementById("header");
+  if (mode === HEADER_OFF) {
+    header.setAttribute("class", "header-off");
+  } else {
+    header.removeAttribute("class");
+  }
+}
+
+function setBodyBackground(what) {
+  const body = document.body;
+
+  switch (what) {
+    case BACKGROUND_NORMAL:
+      body.removeAttribute("class");
+      break;
+    case BACKGROUND_BLACK:
+      body.setAttribute("class", "body-background-black");
+      break;
+    case BACKGROUND_SPACE:
+      body.setAttribute("class", "body-background-image");
+      break;
+    default:
+  }
+}
+
 function initStartButton() {
-  // FIXME: CSS
   const contentsDiv = document.getElementById("contents");
   const startButton = document.createElement("button");
   startButton.innerHTML = "PLAY";
   startButton.setAttribute("class", "start-button");
   startButton.addEventListener("click", () => {
-    startButton.setAttribute("style", "display: none");
-    const body = document.body;
-    body.setAttribute("class", "body-background-black");
+    startButton.setAttribute("class", "start-button-off");
+    setHeader(HEADER_OFF);
+    setBodyBackground(BACKGROUND_BLACK);
     setTimeout(() => {
-      body.setAttribute("class", "body-background-image");
+      setBodyBackground(BACKGROUND_SPACE);
       timerId = setTimeout(performSorting, 0);
       backgroundSource = sound.play(sound.BACKGROUND);
     }, FADE_DELAY);
@@ -150,19 +176,19 @@ const performSorting = () => {
 
   index++;
   if (index % 20 === 0) {
-    createLines();
+    addLines();
   }
 
   if (index >= sortingSteps.length) {
-    removeLines();
-    clearTimeout(timerId);
     index = 0;
+    clearTimeout(timerId);
     sound.stop(backgroundSource);
     sound.play(sound.TADA);
-    const body = document.body;
-    body.setAttribute("class", "body-background-black");
+    removeLines();
+    setBodyBackground(BACKGROUND_BLACK);
+    setHeader(HEADER_ON);
     setTimeout(() => {
-      body.removeAttribute("class");
+      setBodyBackground(BACKGROUND_NORMAL);
     }, FADE_DELAY);
     timerId = setInterval(performEnding, 1);
   } else {
