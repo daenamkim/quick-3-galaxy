@@ -63,7 +63,7 @@ body .container {
   color: #92959c;
 }
 
-.start-button {
+.action-button {
   position: absolute;
   top: 100px;
   display: block;
@@ -81,22 +81,18 @@ body .container {
     -webkit-box-shadow 0.5s ease, -moz-box-shadow 0.5s ease, top 0.5s ease;
 }
 
-.start-button:hover {
+.action-button:hover {
   background-color: #eaa115ff;
   -webkit-box-shadow: 0px 10px 10px -5px #777;
   -moz-box-shadow: 0px 10px 10px -5px #777;
   box-shadow: 0px 10px 10px -5px #777;
 }
 
-.start-button:active {
+.action-button:active {
   top: 105px;
   -webkit-box-shadow: 0px 5px 10px -5px #777;
   -moz-box-shadow: 0px 5px 10px -5px #777;
   box-shadow: 0px 5px 10px -5px #777;
-}
-
-.start-button-off {
-  display: non;
 }
 
 #lines {
@@ -114,4 +110,10 @@ body .container {
   to {
     stroke-dashoffset: 10000;
   }
+}
+
+.sort-chart {
+  display: block;
+  height: 350px;
+  width: 770px;
 }

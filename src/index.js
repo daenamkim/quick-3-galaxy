@@ -3,6 +3,8 @@ const Chart = require("chart.js");
 const Quick3Sort = require("./class/Quick3Sort");
 const sound = require("./util/sound");
 const { shuffle } = require("./util/etc");
+require("./index.css");
+
 const MAX_SAMPLES = 1000;
 const FADE_DELAY = 2000;
 const BACKGROUND_NORMAL = "normal";
@@ -11,12 +13,13 @@ const BACKGROUND_SPACE = "space";
 const HEADER_OFF = "off";
 const HEADER_ON = "on";
 
-require("./index.css");
-
 let sortChart;
+let sortCanvas;
 let sortingSteps;
 let backgroundSource;
 let linesSource;
+let stepIndex;
+let timerId;
 
 function removeLines() {
   const contentsDiv = document.getElementById("contents");
@@ -83,13 +86,13 @@ function setBodyBackground(what) {
   }
 }
 
-function initStartButton() {
+function addStartButton() {
   const contentsDiv = document.getElementById("contents");
   const startButton = document.createElement("button");
   startButton.innerHTML = "PLAY";
-  startButton.setAttribute("class", "start-button");
+  startButton.setAttribute("class", "action-button");
   startButton.addEventListener("click", () => {
-    startButton.setAttribute("class", "start-button-off");
+    contentsDiv.removeChild(startButton);
     setHeader(HEADER_OFF);
     setBodyBackground(BACKGROUND_BLACK);
     setTimeout(() => {
@@ -101,8 +104,41 @@ function initStartButton() {
   contentsDiv.appendChild(startButton);
 }
 
+function addResetButton() {
+  const contentsDiv = document.getElementById("contents");
+  const resetButton = document.createElement("button");
+  resetButton.innerHTML = "RESET";
+  resetButton.setAttribute("class", "action-button");
+  resetButton.addEventListener("click", () => {
+    contentsDiv.removeChild(resetButton);
+    init();
+  });
+  contentsDiv.appendChild(resetButton);
+}
+
+function removeSortCanvas() {
+  const contentsDiv = document.getElementById("contents");
+  if (sortCanvas) {
+    contentsDiv.removeChild(sortCanvas);
+  }
+}
+
+function addSortCanvas() {
+  const contentsDiv = document.getElementById("contents");
+  sortCanvas = document.createElement("canvas");
+  sortCanvas.setAttribute("class", "sort-chart");
+  contentsDiv.appendChild(sortCanvas);
+}
+
 function initChart(data) {
-  const sortContext = document.getElementById("sortChart").getContext("2d");
+  removeSortCanvas();
+  addSortCanvas();
+
+  if (!sortCanvas) {
+    return;
+  }
+
+  const sortContext = sortCanvas.getContext("2d");
   const chartInitData = {
     datasets: [
       {
@@ -126,10 +162,17 @@ function initChart(data) {
 }
 
 function init() {
+  stepIndex = 0;
+  sortChart = null;
+  sortingSteps = null;
+  backgroundSource = null;
+  linesSource = null;
+  timerId = null;
+
   const samples = Array(MAX_SAMPLES)
     .fill(1)
-    .map((item, index) => {
-      return index + 1;
+    .map((item, stepIndex) => {
+      return stepIndex + 1;
     });
   const shuffledSamples = shuffle(samples);
   const quick3Sort = new Quick3Sort(shuffledSamples);
@@ -137,24 +180,23 @@ function init() {
   sortingSteps = quick3Sort.getSteps();
 
   initChart(shuffledSamples);
-  initStartButton();
+  addStartButton();
 }
 
-let index = 0;
-let timerId;
 const performEnding = () => {
   sortChart.data.datasets.forEach((dataset) => {
     dataset.backgroundColor.pop();
   });
   sortChart.update();
 
-  if (++index >= MAX_SAMPLES) {
+  if (++stepIndex >= MAX_SAMPLES) {
     clearInterval(timerId);
+    addResetButton();
   }
 };
 
 const performSorting = () => {
-  sortingSteps[index].forEach(() => {
+  sortingSteps[stepIndex].forEach(() => {
     sortChart.data.datasets.forEach((dataset) => {
       // It's weird because forEach of datasets is called once.
       dataset.data.pop();
@@ -162,7 +204,7 @@ const performSorting = () => {
     });
   });
 
-  sortingSteps[index].forEach((sample) => {
+  sortingSteps[stepIndex].forEach((sample) => {
     sortChart.data.datasets.forEach((dataset) => {
       dataset.data.push(sample);
       dataset.backgroundColor.push(
@@ -174,13 +216,13 @@ const performSorting = () => {
   sortChart.update();
   sound.play(sound.LASER);
 
-  index++;
-  if (index % 20 === 0) {
+  stepIndex++;
+  if (stepIndex % 20 === 0) {
     addLines();
   }
 
-  if (index >= sortingSteps.length) {
-    index = 0;
+  if (stepIndex >= sortingSteps.length) {
+    stepIndex = 0;
     clearTimeout(timerId);
     sound.stop(backgroundSource);
     sound.play(sound.TADA);
