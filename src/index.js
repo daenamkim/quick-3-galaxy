@@ -6,7 +6,9 @@ const { shuffle } = require("./util/etc");
 require("./index.css");
 
 const MAX_SAMPLES = 1000;
-const START_DELAY = 4100;
+const PERFORM_ENDING_DELAY = 1;
+const PERFORM_SORTING_DELAY = 15;
+const TRANSITION_DELAY = 4100;
 const BACKGROUND_NORMAL = "normal";
 const BACKGROUND_BLACK = "black";
 const BACKGROUND_SPACE = "space";
@@ -102,7 +104,7 @@ function addStartButton() {
     setTimeout(() => {
       setBodyBackground(BACKGROUND_SPACE);
       timerId = setTimeout(performSorting, 0);
-    }, START_DELAY);
+    }, TRANSITION_DELAY);
   });
   contentsDiv.appendChild(startButton);
 }
@@ -238,10 +240,10 @@ const performSorting = () => {
     setHeader(HEADER_ON);
     setTimeout(() => {
       setBodyBackground(BACKGROUND_NORMAL);
-    }, FADE_DELAY);
-    timerId = setInterval(performEnding, 1);
+    }, TRANSITION_DELAY);
+    timerId = setInterval(performEnding, PERFORM_ENDING_DELAY);
   } else {
-    timerId = setTimeout(performSorting, 15);
+    timerId = setTimeout(performSorting, PERFORM_SORTING_DELAY);
   }
 };
 
