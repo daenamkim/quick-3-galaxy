@@ -6,7 +6,7 @@ const { shuffle } = require("./util/etc");
 require("./index.css");
 
 const MAX_SAMPLES = 1000;
-const FADE_DELAY = 2000;
+const START_DELAY = 4100;
 const BACKGROUND_NORMAL = "normal";
 const BACKGROUND_BLACK = "black";
 const BACKGROUND_SPACE = "space";
@@ -42,7 +42,10 @@ function addLines() {
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
     line.setAttribute("stroke-width", Math.floor(Math.random() * 10));
-    line.setAttribute("stroke-dasharray", Math.floor(Math.random() * 150) + 50);
+    line.setAttribute(
+      "stroke-dasharray",
+      Math.floor(Math.random() * 1000) + 50
+    );
     line.setAttribute(
       "stroke",
       `#${Math.random() > 0.5 ? "f00" : "0f0"}${Math.floor(
@@ -92,14 +95,14 @@ function addStartButton() {
   startButton.innerHTML = "PLAY";
   startButton.setAttribute("class", "action-button");
   startButton.addEventListener("click", () => {
+    backgroundSource = sound.play(sound.BACKGROUND);
     contentsDiv.removeChild(startButton);
     setHeader(HEADER_OFF);
     setBodyBackground(BACKGROUND_BLACK);
     setTimeout(() => {
       setBodyBackground(BACKGROUND_SPACE);
       timerId = setTimeout(performSorting, 0);
-      backgroundSource = sound.play(sound.BACKGROUND);
-    }, FADE_DELAY);
+    }, START_DELAY);
   });
   contentsDiv.appendChild(startButton);
 }
@@ -152,7 +155,11 @@ function initChart(data) {
   sortChart = new Chart(sortContext, {
     data: chartInitData,
     type: "polarArea",
-    options: [],
+    options: {
+      scale: {
+        display: true,
+      },
+    },
   });
 
   // Disable animation effect after init.
@@ -217,7 +224,7 @@ const performSorting = () => {
   sound.play(sound.LASER);
 
   stepIndex++;
-  if (stepIndex % 20 === 0) {
+  if (stepIndex % 5 === 0) {
     addLines();
   }
 
@@ -234,7 +241,7 @@ const performSorting = () => {
     }, FADE_DELAY);
     timerId = setInterval(performEnding, 1);
   } else {
-    timerId = setTimeout(performSorting, 1);
+    timerId = setTimeout(performSorting, 15);
   }
 };
 

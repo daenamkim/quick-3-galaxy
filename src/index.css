@@ -7,7 +7,7 @@
 }
 
 body {
-  background-color: #e9ebee;
+  background-color: #edf0f2;
   transition: background-color 3s ease;
 }
 
@@ -16,10 +16,10 @@ body {
 }
 
 .body-background-image {
-  /* Backup */
-  /* background: url("/img/space.gif") no-repeat center center fixed;  */
-  background: url("https://media.giphy.com/media/tL5HmgfZi0Qow/giphy.gif")
-    no-repeat center center fixed;
+  /* Source */
+  /* background: url("https://media.giphy.com/media/tL5HmgfZi0Qow/giphy.gif")
+    no-repeat center center fixed; */
+  background: url("/img/space.gif") no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -33,7 +33,7 @@ body .container {
 
 #header {
   z-index: 100;
-  background-color: #4868ad7f;
+  background-color: #3849547f;
   text-align: center;
   position: fixed;
   display: block;
@@ -60,7 +60,7 @@ body .container {
   height: 50px;
   line-height: 50px;
   text-align: center;
-  color: #92959c;
+  color: #384954;
 }
 
 .action-button {
@@ -103,7 +103,7 @@ body .container {
 }
 
 .line {
-  animation: line-ani 10s linear infinite;
+  animation: line-ani 0.1s linear infinite;
 }
 
 @keyframes line-ani {
@@ -114,6 +114,6 @@ body .container {
 
 .sort-chart {
   display: block;
-  height: 350px;
-  width: 770px;
+  height: 720px;
+  width: 100%;
 }
